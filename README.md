@@ -18,7 +18,9 @@ A command-line tool for quickly organizing groups of images into multiple PDFs
 
 ## Installing
 
-Download the `docgrouper` file, set as executable, place on PATH.
+First, install `imagemagick`: `sudo apt install imagemagick`
+
+The download the `docgrouper` file, set as executable, and place it somewhere on PATH.
 
 
 ## Usage
@@ -42,3 +44,4 @@ Group documents, then convert to PDF (for shorter sessions)
 ## Limitations
 - Only works on Linux
 - Uses the system image viewer and can be a bit slow to load images
+- imagemagick may need to be reconfigured if pdf creation is not working
