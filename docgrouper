@@ -1,0 +1,84 @@
+#!/bin/python3
+from sys import argv
+import os
+from PIL import Image
+
+
+# Help message
+HELP_MSG = """
+docgrouper v1 by jvadair
+Arguments:
+    group    -> Runs the interactive console for displaying photos and grouping them into documents
+    pdf      -> Creates a PDF for each subfolder
+    full|run -> Group documents, then convert to PDF
+
+Note:
+All images must be in jpg format.
+"""
+
+
+
+# Helper functions
+
+
+def clear():
+    os.system('clear' if os.name != 'nt' else 'cls')
+
+
+# Actions
+
+# DISABLED because it can cause issues with the grouping function
+# rename -> Renames the files by sorting them by name and then numbering them 0-n
+# def rename():
+#     files = sorted(os.listdir())
+
+#     for file in files:
+#         if file.endswith('.jpg'):
+#             os.rename(file, str(files.index(file)) + '.jpg')
+
+def group():
+    files = [file for file in sorted(os.listdir()) if file.endswith('.jpg')]
+    last = ''
+    this = ''
+
+    for file in files:
+        clear()
+        image = Image.open(file)
+        image.show()
+        this = input('Document name (leave blank for previous) [>] ')
+        if not this and not last:  # Prevent blank name first run
+            while not this:
+                clear()
+                this = input('You must pick a document name to start [>] ')
+        this = this.replace('/', '-')
+        if this:  # If doc name changed
+            last = this
+        else:
+            this = last
+
+        if not os.path.exists(this):
+            os.mkdir(this)
+        os.rename(file, this + '/' + file)
+
+def make_pdfs():
+    subfolders = [ f.name for f in os.scandir() if f.is_dir() ]
+
+    for folder in subfolders:
+        os.system(f"convert \"{folder}\"/*.jpg -auto-orient \"{folder}\".pdf")
+
+
+# Link argv to actions
+if len(argv) < 2:
+    print(HELP_MSG)
+elif argv[1] == 'rename':
+    rename()
+elif argv[1] == 'group':
+    group()
+elif argv[1] == 'pdf':
+    make_pdfs()
+elif argv[1] in ('full', 'run'):
+    # rename()
+    group()
+    make_pdfs()
+else:
+    print(HELP_MSG)
